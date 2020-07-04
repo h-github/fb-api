@@ -6,10 +6,10 @@
     "outDir": "lib",
     "sourceMap": true,
     "strict": true,
-    "target": "es2017"
+    "target": "es2017",
+    "typeRoots": ["./typings", "./node_modules/@types"]
   },
   "compileOnSave": true,
-  "include": [
-    "src"
-  ]
+  "include": ["./src", "./src/types"],
+  "exclude": ["./node_modules", "./typings"]
 }

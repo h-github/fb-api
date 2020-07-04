@@ -1,5 +1,5 @@
 import * as admin from "firebase-admin";
-import { IDatabaseSetting } from "./databaseSetting";
+import { IDatabaseSetting } from "./types/databaseSetting";
 
 class Database {
   firestore: FirebaseFirestore.Firestore;
