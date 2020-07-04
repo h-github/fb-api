@@ -1,15 +1,17 @@
-import * as admin from "firebase-admin";
+import * as firebase from "firebase";
 import { IDatabaseSetting } from "./types/databaseSetting";
 
 class Database {
-  firestore: admin.firestore.Firestore;
+  firestore: firebase.firestore.Firestore;
 
   constructor(setting: IDatabaseSetting) {
-    admin.initializeApp({
-      credential: admin.credential.cert(setting.service_account_key),
-      databaseURL: `https://${setting.project_id}.firebaseio.com`,
+    firebase.initializeApp({
+      apiKey: setting.api_key,
+      authDomain: `${setting.project_id}.firebaseapp.com`,
+      projectId: setting.project_id,
     });
-    this.firestore = admin.firestore();
+
+    this.firestore = firebase.firestore();
   }
 
   write<T>(
@@ -24,11 +26,17 @@ class Database {
         .collection(collection)
         .doc(id)
         .withConverter<T>({
-          toFirestore: (data: T) => {
+          toFirestore: (data: T): firebase.firestore.DocumentData => {
             return { ...data };
           },
-          fromFirestore: (data): T => {
-            return data as T;
+          fromFirestore: (
+            snapshot: firebase.firestore.QueryDocumentSnapshot<
+              firebase.firestore.DocumentData
+            >,
+            options: firebase.firestore.SnapshotOptions
+          ): T => {
+            const data = snapshot.data(options);
+            return <T>data;
           },
         })
         .set(document)
@@ -55,11 +63,17 @@ class Database {
         .collection(collection)
         .doc(id)
         .withConverter<T>({
-          toFirestore: (data: T) => {
+          toFirestore: (data: T): firebase.firestore.DocumentData => {
             return { ...data };
           },
-          fromFirestore: (data): T => {
-            return data as T;
+          fromFirestore: (
+            snapshot: firebase.firestore.QueryDocumentSnapshot<
+              firebase.firestore.DocumentData
+            >,
+            options: firebase.firestore.SnapshotOptions
+          ): T => {
+            const data = snapshot.data(options);
+            return <T>data;
           },
         })
         .get()
@@ -88,18 +102,24 @@ class Database {
           .collection(collection)
           // .limit(limit)
           .withConverter<T>({
-            toFirestore: (data: T) => {
+            toFirestore: (data: T): firebase.firestore.DocumentData => {
               return { ...data };
             },
-            fromFirestore: (data): T => {
-              return data as T;
+            fromFirestore: (
+              snapshot: firebase.firestore.QueryDocumentSnapshot<
+                firebase.firestore.DocumentData
+              >,
+              options: firebase.firestore.SnapshotOptions
+            ): T => {
+              const data = snapshot.data(options);
+              return <T>data;
             },
           })
           .get()
           .then(doc => {
             if (doc.empty) return [];
             return doc.docs.map(
-              (dc: admin.firestore.QueryDocumentSnapshot<T>) => dc.data()
+              (dc: firebase.firestore.QueryDocumentSnapshot<T>) => dc.data()
             );
           })
           .catch((error: any) => {
