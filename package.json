@@ -1,6 +1,6 @@
 {
   "name": "nice-fb-api",
-  "version": "1.0.5",
+  "version": "1.0.8",
   "description": "",
   "scripts": {
     "lint": "tslint --project tsconfig.json",
@@ -9,7 +9,8 @@
     "shell": "npm run build && firebase functions:shell",
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
-    "logs": "firebase functions:log"
+    "logs": "firebase functions:log",
+    "publish": "npm publish"
   },
   "engines": {
     "node": "10"

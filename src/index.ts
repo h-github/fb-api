@@ -2,10 +2,13 @@ import * as admin from "firebase-admin";
 import { IDatabaseSetting } from "./types/databaseSetting";
 
 class Database {
-  firestore: FirebaseFirestore.Firestore;
+  firestore: admin.firestore.Firestore;
 
   constructor(setting: IDatabaseSetting) {
-    admin.initializeApp({ projectId: setting.project_id });
+    admin.initializeApp({
+      credential: admin.credential.cert(setting.service_account_key),
+      databaseURL: `https://${setting.project_id}.firebaseio.com`,
+    });
     this.firestore = admin.firestore();
   }
 
@@ -21,10 +24,10 @@ class Database {
         .collection(collection)
         .doc(id)
         .withConverter<T>({
-          toFirestore: (data: T): FirebaseFirestore.DocumentData => {
+          toFirestore: (data: T) => {
             return { ...data };
           },
-          fromFirestore: (data: FirebaseFirestore.DocumentData): T => {
+          fromFirestore: (data): T => {
             return data as T;
           },
         })
@@ -52,10 +55,10 @@ class Database {
         .collection(collection)
         .doc(id)
         .withConverter<T>({
-          toFirestore: (data: T): FirebaseFirestore.DocumentData => {
+          toFirestore: (data: T) => {
             return { ...data };
           },
-          fromFirestore: (data: FirebaseFirestore.DocumentData): T => {
+          fromFirestore: (data): T => {
             return data as T;
           },
         })
@@ -85,10 +88,10 @@ class Database {
           .collection(collection)
           // .limit(limit)
           .withConverter<T>({
-            toFirestore: (data: T): FirebaseFirestore.DocumentData => {
+            toFirestore: (data: T) => {
               return { ...data };
             },
-            fromFirestore: (data: FirebaseFirestore.DocumentData): T => {
+            fromFirestore: (data): T => {
               return data as T;
             },
           })
@@ -96,7 +99,7 @@ class Database {
           .then(doc => {
             if (doc.empty) return [];
             return doc.docs.map(
-              (dc: FirebaseFirestore.QueryDocumentSnapshot<T>) => dc.data()
+              (dc: admin.firestore.QueryDocumentSnapshot<T>) => dc.data()
             );
           })
           .catch((error: any) => {
